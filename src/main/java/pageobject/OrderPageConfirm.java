@@ -11,12 +11,8 @@ public class OrderPageConfirm {
         this.driver = driver;
     }
 
-    // Элементы модального окна
-
     // Кнопка "Да"
     private final By yesButton = By.xpath("//button[text()='Да']");
-
-    // Методы
 
     // Нажать "Да"
     public void clickYes() {

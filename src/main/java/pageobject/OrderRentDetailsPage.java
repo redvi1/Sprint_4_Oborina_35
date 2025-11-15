@@ -3,11 +3,11 @@ package pageobject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-public class OrderPage2 {
+public class OrderRentDetailsPage {
 
     private final WebDriver driver;
 
-    public OrderPage2(WebDriver driver) {
+    public OrderRentDetailsPage(WebDriver driver) {
         this.driver = driver;
     }
 

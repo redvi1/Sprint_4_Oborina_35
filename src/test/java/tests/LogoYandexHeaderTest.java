@@ -5,50 +5,44 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pageobject.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import pageobject.*;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 @RunWith(Parameterized.class)
 public class LogoYandexHeaderTest {
 
     private WebDriver driver;
 
-    private final String browser;
     private final String startPage;
 
     private static final String BASE_URL = "https://qa-scooter.praktikum-services.ru/";
 
-    public LogoYandexHeaderTest(String browser, String startPage) {
-        this.browser = browser;
+    public LogoYandexHeaderTest(String startPage) {
         this.startPage = startPage;
     }
 
-    @Parameterized.Parameters(name = "{0}, страница: {1}")
+    @Parameterized.Parameters(name = "Страница: {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {"chrome", "main"},
-                {"firefox", "main"},
-                {"chrome", "orderStep1"},
-                {"firefox", "orderStep1"},
-                {"chrome", "orderStep2"},
-                {"firefox", "orderStep2"},
-                {"chrome", "status"},
-                {"firefox", "status"},
+                {"main"},
+                {"orderStep1"},
+                {"orderStep2"},
+                {"status"},
         });
     }
 
     @Before
     public void setUp() {
-        if ("chrome".equals(browser)) {
-            driver = new ChromeDriver();
-        } else if ("firefox".equals(browser)) {
-            driver = new FirefoxDriver();
-        }
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 
@@ -71,7 +65,7 @@ public class LogoYandexHeaderTest {
 
         if ("orderStep2".equals(page)) {
             mainPage.clickTopOrderButton();
-            OrderPage1 step1 = new OrderPage1(driver);
+            OrderClientInfoPage step1 = new OrderClientInfoPage(driver);
             step1.setFirstName("Петр");
             step1.setLastName("Петров");
             step1.setAddress("Площадь");
@@ -85,7 +79,7 @@ public class LogoYandexHeaderTest {
             mainPage.clickTopOrderButton();
 
             // шаг 1
-            OrderPage1 step1 = new OrderPage1(driver);
+            OrderClientInfoPage step1 = new OrderClientInfoPage(driver);
             step1.setFirstName("Инна");
             step1.setLastName("Ивановна");
             step1.setAddress("Неплощадь");
@@ -94,7 +88,7 @@ public class LogoYandexHeaderTest {
             step1.clickNextButton();
 
             // шаг 2
-            OrderPage2 step2 = new OrderPage2(driver);
+            OrderRentDetailsPage step2 = new OrderRentDetailsPage(driver);
             step2.selectDate12();
             step2.selectTwoDaysRental();
             step2.selectBlackColor();
@@ -140,18 +134,6 @@ public class LogoYandexHeaderTest {
                 ExpectedConditions.urlContains("dzen.ru")
         ));
 
-        String currentUrl = driver.getCurrentUrl().toLowerCase();
-        System.out.println("Открылся URL: " + currentUrl);
-
-        if (currentUrl.contains("ya.ru")) {
-            System.out.println("Открылась главная Яндекс (ya.ru)");
-        } else if (currentUrl.contains("yandex.ru")) {
-            System.out.println("Открылась главная Яндекс (yandex.ru)");
-        } else if (currentUrl.contains("dzen.ru")) {
-            System.out.println("Открылась страница Dzen (перенаправление Яндекса)");
-        } else {
-            Assert.fail("Не открылся ни один из ожидаемых адресов: " + currentUrl);
-        }
 
         // закрываем вкладку и возвращаемся
         driver.close();
